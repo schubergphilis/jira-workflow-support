@@ -1,0 +1,9 @@
+## leave everything left aligned here, otherwise there will be a lot whitespace in the html @$#%ing with the comma in the list
+#set($first = true)
+#foreach($project in $selectedProjects)
+#if(!$first)
+,
+#end##
+${project.name}##
+#set($first = false)##
+#end

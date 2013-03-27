@@ -1,0 +1,35 @@
+#set($i18nprefix = "projects-field.config")
+
+<form id="configure" method="post" action="${req.contextPath}/secure/admin/editprojectcategory.jspa" class="aui">
+        <h2>$i18n.getText("${i18nprefix}.title")</h2>
+        <div  class="field-group">
+        <label for="projectCategoryId">$i18n.getText("${i18nprefix}.projectCategory.label")</label>
+	  	<select class="select" id="projectCategoryId" name="projectCategoryId">
+	  		<option title="$i18n.getText("${i18nprefix}.projectCategory.all")" value="0">$i18n.getText("${i18nprefix}.projectCategory.all")</option>	
+	  		<optgroup label="$i18n.getText("${i18nprefix}.projectCategory.optgroup")">	
+			#foreach($projectCategory in $projectCategories)
+				#set($selected = false)
+				#if($projectCategory.id == $projectCategoryId)
+					#set($selected = true)
+				#end
+				<option#if($selected) selected="selected"#end title="${projectCategory.name}" value="${projectCategory.id}">${projectCategory.name}</option>	
+			#end
+			</optgroup>
+		</select>
+	</div>
+	
+	<input type="hidden" name="fieldConfigId" value="$fieldConfigId">
+    <input type="hidden" name="atl_token" value="$atl_token" />
+    
+	<div  class="field-group buttons">
+		<input type="submit" class="aui-button" name="Submit" id="Submit" value="$i18n.getText("${i18nprefix}.save.value")" title="$i18n.getText("${i18nprefix}.save.title")" />
+	</div>
+</form>
+
+<script>
+	new AJS.SingleSelect({
+	       element: "AJS.$('#projectCategoryId')",
+	       itemAttrDisplayed: "title",
+	       errorMessage: "${i18n.getText('${i18nprefix}.projectCategory.nosuch')}"
+	});
+</script>

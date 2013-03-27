@@ -1,0 +1,12 @@
+<div class="field-group">
+	<label for="projects-field">Projects</label>
+  	<select class="multi-select" size="5" id="projects-field" name="$customField.id" multiple>	
+		#foreach($project in $projects)
+			#set($selected = false)
+			#if($selectedProjects.contains($project))
+				#set($selected = true)
+			#end
+			<option#if($selected) selected="selected"#end title="${project.name}" value="${project.id}">${project.name}</option>	
+		#end
+	</select>
+</div>

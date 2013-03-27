@@ -1,0 +1,77 @@
+#set($i18nprefix = "create-other-issue-post-function.config")
+#requireResource("com.atlassian.jira.gadgets:common")
+
+<tr>
+    <td class="fieldLabelArea">$i18n.getText("${i18nprefix}.projectField.label")</td>
+    <td>
+  		<select id="projectFieldId" name="projectFieldId">
+  		    <option value="0" selected>Same project</option>
+	  		<optgroup label="$i18n.getText("${i18nprefix}.projectField.optgroup")">	
+  			#foreach($projectField in $projectFields)
+  				#set($selected = false)
+				#if($projectFieldId == $projectField.id)
+					#set($selected = true)
+				#end
+  				<option#if($selected) selected="selected"#end title="${projectField.name}" value="${projectField.id}">${projectField.name}</option>	
+  			#end
+  			</optgroup label="$i18n.getText("${i18nprefix}.projectCategory.optgroup")">
+  		</select>
+    </td>
+</tr>
+<tr>
+    <td class="fieldLabelArea">Issue type:</td>
+    <td>
+  		<select id="issueTypeId" name="issueTypeId">
+  			#foreach($issueType in $issueTypes)
+  				#set($selected = false)
+				#if($issueTypeId == $issueType.id)
+					#set($selected = true)
+				#end
+  				<option#if($selected) selected="selected"#end title="${issueType.name}" value="${issueType.id}">${issueType.name}</option>	
+  			#end
+  		</select>
+    </td>
+</tr>
+<tr>
+    <td class="fieldLabelArea">Status:</td>
+    <td>
+  		<select id="statusId" name="statusId">
+  			#foreach($status in $stati)
+  				#set($selected = false)
+				#if($statusId == $status.id)
+					#set($selected = true)
+				#end
+  				<option#if($selected) selected="selected"#end title="${status.name}" value="${status.id}">${status.name}</option>	
+  			#end
+  		</select>
+    </td>
+</tr>
+<tr>
+    <td class="fieldLabelArea">Link type:</td>
+    <td>
+  		<select id="linkTypeId" name="linkTypeId">
+  			#foreach($linkType in $linkTypes)
+  				#set($selected = false)
+				#if($linkTypeId == $linkType.id)
+					#set($selected = true)
+				#end
+  				<option#if($selected) selected="selected"#end title="${linkType.name}" value="${linkType.id}">${linkType.name}</option>	
+  			#end
+  		</select>
+	</td>
+</tr>
+<tr>
+    <td class="fieldLabelArea">Log Message:</td>
+    <td>
+        <input name="logMessage" id="logMessage" value="$logMessage" />
+    </td>       
+</tr>
+
+
+<script>
+	new AJS.SingleSelect({
+	       element: "AJS.$('#projectFieldId')",
+	       itemAttrDisplayed: "title",
+	       errorMessage: "${i18n.getText('${i18nprefix}.projectField.nosuch')}"
+	});
+</script>

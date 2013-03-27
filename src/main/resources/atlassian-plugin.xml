@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    <param name="plugin-icon">images/pluginIcon.png</param>
+    <param name="plugin-logo">images/pluginLogo.png</param>
+  </plugin-info>
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="i18n/workflow"/>
+  
+  <!-- add our web resources -->
+  <web-resource key="workflow-resources" name="workflow Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <resource type="download" name="workflow.css" location="/css/workflow.css"/>
+    <resource type="download" name="workflow.js" location="/js/workflow.js"/>
+    <resource type="download" name="images/" location="/images"/>
+    <context>workflow</context>
+  </web-resource>
+  <!-- publish our component -->
+  <component key="myPluginComponent" class="com.schubergphilis.jira.plugins.MyPluginComponentImpl" public="true">
+    <interface>com.schubergphilis.jira.plugins.MyPluginComponent</interface>
+  </component>
+  <!-- import from the product container -->
+  <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
+  <workflow-function key="create-other-issue-post-function" name="Create Other Issue Post Function" i18n-name-key="create-other-issue-post-function.name" class="com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunctionFactory">
+    <description key="create-other-issue-post-function.description">The Create Other Issue Post Function Plugin</description>
+    <function-class>com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunction</function-class>
+    <resource type="velocity" name="view" location="templates/postfunctions/create-other-issue-post-function.vm"/>
+    <resource type="velocity" name="input-parameters" location="templates/postfunctions/create-other-issue-post-function-input.vm"/>
+    <resource type="velocity" name="edit-parameters" location="templates/postfunctions/create-other-issue-post-function-input.vm"/>
+  </workflow-function>
+  <customfield-type name="Projects Field" i18n-name-key="projects-field.name" key="projects-field" class="com.schubergphilis.jira.plugins.customfield.ProjectsField">
+    <description key="projects-field.description">The Projects Field Plugin</description>
+    <resource name="view" type="velocity" location="/templates/customfields/projects-field/view.vm"/>
+    <resource name="edit" type="velocity" location="/templates/customfields/projects-field/edit.vm"/>
+  </customfield-type>
+	<webwork1 key="projectsfieldconfigaction" name="Projects field configuration action" class="java.lang.Object">
+		<actions>
+			<action name="com.schubergphilis.jira.plugins.customfield.EditConfiguration" alias="editprojectcategory" roles-required="admin">
+				<view name="input">/templates/customfields/projects-field/edit-config.vm</view>
+			</action>
+		</actions>
+	</webwork1>
+</atlassian-plugin>
