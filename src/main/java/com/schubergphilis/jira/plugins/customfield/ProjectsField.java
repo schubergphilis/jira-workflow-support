@@ -34,9 +34,9 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
         super(customFieldValuePersister, genericConfigManager);
         this.projectManager = projectManager;
     }
-    
+
     /**
-     * This is where the different aspects of a custom field such as 
+     * This is where the different aspects of a custom field such as
      * having a default value or other config items are set.
      */
     @Override
@@ -53,24 +53,34 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
         final Map<String, Object> map = super.getVelocityParameters(issue, field, fieldLayoutItem);
 
         // This method is also called to get the default value, in
-        // which case issue is null so we can't use it to add currencyLocale
+        // which case issue is null so we can't use it
         if (issue == null) {
             return map;
         }
 
         FieldConfig fieldConfig = field.getRelevantConfig(issue);
-        
-        DAO.getProjectCategory(fieldConfig);
 
-        map.put("projects", projectManager.getProjectObjectsFromProjectCategory(10000L));
+        Long projectCategory = DAO.getProjectCategory(fieldConfig);
+
+        map.put("projects", getProjects(projectCategory));
         map.put("selectedProjects", getSelectedProjects((ArrayList<Long>) field.getValue(issue)));
         return map;
     }
 
+    private Collection<Project> getProjects(Long projectCategory) {
+        if (projectCategory < 1) {
+            return projectManager.getProjectObjects();
+        } else {
+            return projectManager.getProjectObjectsFromProjectCategory(projectCategory);
+        }
+    }
+
     private Collection<Project> getSelectedProjects(ArrayList<Long> projectIds) {
         ArrayList<Project> answer = new ArrayList<Project>();
-        for (Long projectId : projectIds) {
-            answer.add(getProject(projectId));
+        if (projectIds != null) {
+            for (Long projectId : projectIds) {
+                answer.add(getProject(projectId));
+            }
         }
         return answer;
     }
@@ -95,8 +105,7 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
     }
 
     @Override
-    public void validateFromParams(CustomFieldParams relevantParams, ErrorCollection errorCollectionToAddTo, FieldConfig config) {
-    }
+    public void validateFromParams(CustomFieldParams relevantParams, ErrorCollection errorCollectionToAddTo, FieldConfig config) {}
 
     @Override
     public Collection<Long> getValueFromCustomFieldParams(CustomFieldParams parameters) throws FieldValidationException {

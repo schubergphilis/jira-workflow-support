@@ -1,1 +1,3 @@
-Creates an new issue
+#set($i18nprefix = "create-other-issue-post-function.config")
+
+${i18n.getText('${i18nprefix}.projectField.nosuch')}

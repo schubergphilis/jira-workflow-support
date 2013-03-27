@@ -6,10 +6,13 @@ import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
+import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.workflow.function.issue.AbstractJiraFunctionProvider;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
@@ -24,11 +27,20 @@ import java.util.Map.Entry;
 public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
     private static final Logger log = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
+
     public static final String FIELD_NAME_PROJECTS_FIELD_ID = "projectsfieldId";
     public static final String FIELD_NAME_LOG_MESSAGE = "logMessage";
     public static final String FIELD_NAME_ISSUE_TYPE_ID = "issueTypeId";
     public static final String FIELD_NAME_LINK_TYPE_ID = "linkTypeId";
     public static final String FIELD_NAME_STATUS_ID = "statusId";
+
+    private ProjectManager projectManager;
+     private CustomFieldManager customFieldManager;
+
+    CreateOtherIssuePostFunction(ProjectManager projectManager, CustomFieldManager customFieldManager) {
+        this.projectManager = projectManager;
+        this.customFieldManager = customFieldManager;
+    }
 
     public void execute(Map transientVars, Map args, PropertySet ps) throws WorkflowException {
         MutableIssue issue = getIssue(transientVars);
@@ -59,8 +71,22 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     }
 
     private Collection<Project> getProjects(MutableIssue issue, Long projectsFieldId) {
-        // TODO Auto-generated method stub
-        return null;
+        if (projectsFieldId < 1) {
+            return getAllProjects();
+        } else {
+           return getProjectsFromField(issue, projectsFieldId);
+        }
+    }
+
+    private Collection<Project> getProjectsFromField(MutableIssue issue, Long projectsFieldId) {
+        CustomField customField = customFieldManager.getCustomFieldObject(projectsFieldId);
+        Object a = issue.getCustomFieldValue(customField);
+        System.out.println(">>>> " + a.getClass().getName());
+        return getAllProjects();
+    }
+
+    private Collection<Project> getAllProjects() {
+        return projectManager.getProjectObjects();
     }
 
     private void linkIssues(MutableIssue oldIssue, Issue newIssue, Long linkTypeId) {

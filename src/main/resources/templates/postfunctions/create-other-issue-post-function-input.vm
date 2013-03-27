@@ -1,5 +1,4 @@
 #set($i18nprefix = "create-other-issue-post-function.config")
-#requireResource("com.atlassian.jira.gadgets:common")
 
 <tr>
     <td class="fieldLabelArea">$i18n.getText("${i18nprefix}.projectField.label")</td>
@@ -63,7 +62,7 @@
 <tr>
     <td class="fieldLabelArea">Log Message:</td>
     <td>
-        <input name="logMessage" id="logMessage" value="$logMessage" />
+        <input name="logMessage" id="logMessage" value="$!logMessage" />
     </td>       
 </tr>
 

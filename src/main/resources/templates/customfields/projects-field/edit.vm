@@ -1,3 +1,5 @@
+#set($i18nprefix = "projects-field")
+
 <div class="field-group">
 	<label for="projects-field">Projects</label>
   	<select class="multi-select" size="5" id="projects-field" name="$customField.id" multiple>	
@@ -9,4 +11,13 @@
 			<option#if($selected) selected="selected"#end title="${project.name}" value="${project.id}">${project.name}</option>	
 		#end
 	</select>
+	<br>
 </div>
+
+<script>
+	new AJS.MultiSelect({
+	       element: "AJS.$('#projects-field')",
+	       itemAttrDisplayed: "title",
+	       errorMessage: "${i18n.getText('${i18nprefix}.nosuch')}"
+	});
+</script>

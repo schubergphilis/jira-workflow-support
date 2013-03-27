@@ -41,10 +41,10 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
 
     @Override
     protected void getVelocityParamsForInput(Map<String, Object> velocityParams) {
-        System.err.println("getting for input");
         velocityParams.put("projectFields", getCustomFields());
         velocityParams.put("linkTypes", issueLinkTypeManager.getIssueLinkTypes());
         velocityParams.put("issueTypes", issueTypeManager.getIssueTypes());
+        velocityParams.put("stati", statusManager.getStatuses());
         velocityParams.put("stati", statusManager.getStatuses());
     }
 
@@ -62,20 +62,12 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
 
     @Override
     protected void getVelocityParamsForEdit(Map<String, Object> velocityParams, AbstractDescriptor descriptor) {
-        System.err.println("getting for edit");
-
         getVelocityParamsForInput(velocityParams);
         getVelocityParamsForView(velocityParams, descriptor);
     }
 
     @Override
     protected void getVelocityParamsForView(Map<String, Object> velocityParams, AbstractDescriptor descriptor) {
-        System.err.println("getting for view");
-        if (!(descriptor instanceof FunctionDescriptor))
-        {
-            throw new IllegalArgumentException("Descriptor must be a FunctionDescriptor.");
-        }
-
         FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
 
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_ISSUE_TYPE_ID, velocityParams, descriptor);
