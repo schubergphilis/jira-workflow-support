@@ -41,7 +41,7 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
 
     @Override
     protected void getVelocityParamsForInput(Map<String, Object> velocityParams) {
-        velocityParams.put("projectFields", getCustomFields());
+        velocityParams.put("projectsFields", getCustomFields());
         velocityParams.put("linkTypes", issueLinkTypeManager.getIssueLinkTypes());
         velocityParams.put("issueTypes", issueTypeManager.getIssueTypes());
         velocityParams.put("stati", statusManager.getStatuses());
@@ -70,12 +70,12 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
     protected void getVelocityParamsForView(Map<String, Object> velocityParams, AbstractDescriptor descriptor) {
         FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
 
+        copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_PROJECTS_FIELD_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_ISSUE_TYPE_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_STATUS_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_LINK_TYPE_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_LOG_MESSAGE, velocityParams, descriptor);
     }
-
 
     /**
      * Copy the value from storage to the velocity template
@@ -90,6 +90,7 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
         Map params = new HashMap();
 
         // Process The map
+        extractSingleLong(CreateOtherIssuePostFunction.FIELD_NAME_PROJECTS_FIELD_ID, formParams, params);
         extractSingleString(CreateOtherIssuePostFunction.FIELD_NAME_ISSUE_TYPE_ID, formParams, params);
         extractSingleString(CreateOtherIssuePostFunction.FIELD_NAME_STATUS_ID, formParams, params);
         extractSingleLong(CreateOtherIssuePostFunction.FIELD_NAME_LINK_TYPE_ID, formParams, params);

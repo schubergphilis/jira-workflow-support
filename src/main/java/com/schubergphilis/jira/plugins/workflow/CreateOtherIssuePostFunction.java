@@ -20,6 +20,7 @@ import com.opensymphony.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,14 +29,14 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
     private static final Logger log = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
 
-    public static final String FIELD_NAME_PROJECTS_FIELD_ID = "projectsfieldId";
+    public static final String FIELD_NAME_PROJECTS_FIELD_ID = "projectsFieldId";
     public static final String FIELD_NAME_LOG_MESSAGE = "logMessage";
     public static final String FIELD_NAME_ISSUE_TYPE_ID = "issueTypeId";
     public static final String FIELD_NAME_LINK_TYPE_ID = "linkTypeId";
     public static final String FIELD_NAME_STATUS_ID = "statusId";
 
     private ProjectManager projectManager;
-     private CustomFieldManager customFieldManager;
+    private CustomFieldManager customFieldManager;
 
     CreateOtherIssuePostFunction(ProjectManager projectManager, CustomFieldManager customFieldManager) {
         this.projectManager = projectManager;
@@ -50,7 +51,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         try {
             projectsFieldId = Long.parseLong((String) args.get(FIELD_NAME_PROJECTS_FIELD_ID));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         String issueTypeId = (String) args.get(FIELD_NAME_ISSUE_TYPE_ID);
         String statusId = (String) args.get(FIELD_NAME_STATUS_ID);
@@ -74,15 +75,21 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         if (projectsFieldId < 1) {
             return getAllProjects();
         } else {
-           return getProjectsFromField(issue, projectsFieldId);
+            return getProjectsFromField(issue, projectsFieldId);
         }
     }
 
     private Collection<Project> getProjectsFromField(MutableIssue issue, Long projectsFieldId) {
+        ArrayList<Project> answer = new ArrayList<Project>();
+        
         CustomField customField = customFieldManager.getCustomFieldObject(projectsFieldId);
-        Object a = issue.getCustomFieldValue(customField);
-        System.out.println(">>>> " + a.getClass().getName());
-        return getAllProjects();
+        ArrayList<Long> projectIds = (ArrayList<Long>) issue.getCustomFieldValue(customField);
+        
+        for (Long projectId : projectIds) {
+            answer.add(projectManager.getProjectObj(projectId));
+        }
+        
+        return answer;
     }
 
     private Collection<Project> getAllProjects() {

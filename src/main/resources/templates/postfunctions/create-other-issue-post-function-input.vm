@@ -1,17 +1,17 @@
 #set($i18nprefix = "create-other-issue-post-function.config")
 
 <tr>
-    <td class="fieldLabelArea">$i18n.getText("${i18nprefix}.projectField.label")</td>
+    <td class="fieldLabelArea">$i18n.getText("${i18nprefix}.projectsField.label")</td>
     <td>
-  		<select id="projectFieldId" name="projectFieldId">
+  		<select id="projectsFieldId" name="projectsFieldId">
   		    <option value="0" selected>Same project</option>
-	  		<optgroup label="$i18n.getText("${i18nprefix}.projectField.optgroup")">	
-  			#foreach($projectField in $projectFields)
+	  		<optgroup label="$i18n.getText("${i18nprefix}.projectsField.optgroup")">	
+  			#foreach($projectsField in $projectsFields)
   				#set($selected = false)
-				#if($projectFieldId == $projectField.id)
+				#if($projectsFieldId == $projectsField.idAsLong)
 					#set($selected = true)
 				#end
-  				<option#if($selected) selected="selected"#end title="${projectField.name}" value="${projectField.id}">${projectField.name}</option>	
+  				<option#if($selected) selected="selected"#end title="${projectsField.name}" value="${projectsField.idAsLong}">${projectsField.name}</option>	
   			#end
   			</optgroup label="$i18n.getText("${i18nprefix}.projectCategory.optgroup")">
   		</select>
@@ -69,8 +69,8 @@
 
 <script>
 	new AJS.SingleSelect({
-	       element: "AJS.$('#projectFieldId')",
+	       element: "AJS.$('#projectsFieldId')",
 	       itemAttrDisplayed: "title",
-	       errorMessage: "${i18n.getText('${i18nprefix}.projectField.nosuch')}"
+	       errorMessage: "${i18n.getText('${i18nprefix}.projectsField.nosuch')}"
 	});
 </script>

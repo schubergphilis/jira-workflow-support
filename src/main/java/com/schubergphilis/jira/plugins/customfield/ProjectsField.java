@@ -62,9 +62,14 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
 
         Long projectCategory = DAO.getProjectCategory(fieldConfig);
 
+        map.put("projectCategory", getProjectCategory(projectCategory));
         map.put("projects", getProjects(projectCategory));
         map.put("selectedProjects", getSelectedProjects((ArrayList<Long>) field.getValue(issue)));
         return map;
+    }
+
+    private Object getProjectCategory(Long projectCategory) {
+        return projectManager.getProjectCategoryObject(projectCategory);
     }
 
     private Collection<Project> getProjects(Long projectCategory) {

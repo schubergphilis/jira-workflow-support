@@ -43,8 +43,6 @@ public class DAO {
      */
     public static Long getProjectCategory(FieldConfig fieldConfig) {
         Double projectCategoryDouble = retrieveStoredValue(fieldConfig);
-        log.debug("Current stored: " + projectCategoryDouble);
-
         return projectCategoryDouble.longValue();
     }
     
