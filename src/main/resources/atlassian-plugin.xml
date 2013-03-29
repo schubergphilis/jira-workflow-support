@@ -17,16 +17,9 @@
     <context>atl.general</context>
     <context>jira.general</context>
     <context>jira.admin</context>
-    <resource type="download" name="workflow.css" location="/css/workflow.css"/>
     <resource type="download" name="workflow.js" location="/js/workflow.js"/>
     <resource type="download" name="images/" location="/images"/>
   </web-resource>
-  <!-- publish our component -->
-  <component key="myPluginComponent" class="com.schubergphilis.jira.plugins.MyPluginComponentImpl" public="true">
-    <interface>com.schubergphilis.jira.plugins.MyPluginComponent</interface>
-  </component>
-  <!-- import from the product container -->
-  <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
   <workflow-function key="create-other-issue-post-function" name="Create Other Issue Post Function" i18n-name-key="create-other-issue-post-function.name" class="com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunctionFactory">
     <description key="create-other-issue-post-function.description">The Create Other Issue Post Function Plugin</description>
     <function-class>com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunction</function-class>

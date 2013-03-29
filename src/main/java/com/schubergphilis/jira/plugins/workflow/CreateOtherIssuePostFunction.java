@@ -51,7 +51,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         try {
             projectsFieldId = Long.parseLong((String) args.get(FIELD_NAME_PROJECTS_FIELD_ID));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Expected a long, but could not parse it", e);
         }
         String issueTypeId = (String) args.get(FIELD_NAME_ISSUE_TYPE_ID);
         String statusId = (String) args.get(FIELD_NAME_STATUS_ID);
