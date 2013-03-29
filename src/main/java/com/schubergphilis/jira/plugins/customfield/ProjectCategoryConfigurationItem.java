@@ -23,12 +23,13 @@ public class ProjectCategoryConfigurationItem implements FieldConfigItemType {
 
     @Override
     public String getDisplayName() {
+        // not used, instead we know that since jira 4? we can use the getDisplayNameKey and it will get the string from i18n.
         return "Project Category Configuration";
     }
 
     @Override
     public String getDisplayNameKey() {
-        return "Project Category";
+        return "projects-field.configItem.projectCategory.displayName";
     }
 
     @Override

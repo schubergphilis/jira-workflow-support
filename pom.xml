@@ -93,6 +93,14 @@
                     <productVersion>${jira.version}</productVersion>
                     <productDataVersion>${jira.version}</productDataVersion>
                     <jvmArgs>-Xms512m -Xmx756m -XX:MaxPermSize=256m</jvmArgs>
+                    <enableFastdev>false</enableFastdev>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-amps-plugin</artifactId>
+                <configuration>
+                    <enableFastdev>false</enableFastdev>
                 </configuration>
             </plugin>
             <plugin>

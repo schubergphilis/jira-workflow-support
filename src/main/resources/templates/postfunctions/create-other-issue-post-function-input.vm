@@ -4,7 +4,7 @@
     <td class="fieldLabelArea">$i18n.getText("${i18nprefix}.projectsField.label")</td>
     <td>
   		<select id="projectsFieldId" name="projectsFieldId">
-  		    <option value="0" selected>Same project</option>
+  		    <option value="0" title="Same project">Same project</option>
 	  		<optgroup label="$i18n.getText("${i18nprefix}.projectsField.optgroup")">	
   			#foreach($projectsField in $projectsFields)
   				#set($selected = false)
@@ -71,6 +71,5 @@
 	new AJS.SingleSelect({
 	       element: "AJS.$('#projectsFieldId')",
 	       itemAttrDisplayed: "title",
-	       errorMessage: "${i18n.getText('${i18nprefix}.projectsField.nosuch')}"
 	});
 </script>

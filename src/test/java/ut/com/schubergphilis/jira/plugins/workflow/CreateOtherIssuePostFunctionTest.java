@@ -1,11 +1,13 @@
 package ut.com.schubergphilis.jira.plugins.workflow;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import com.atlassian.jira.exception.DataAccessException;
+import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.project.ProjectManager;
 import com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunction;
-
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,7 +30,9 @@ public class CreateOtherIssuePostFunctionTest
 //        issue = createPartialMockedIssue();
 //        issue.setDescription("");
 
-        function = new CreateOtherIssuePostFunction() {
+        CustomFieldManager customFieldManager = mock(CustomFieldManager.class);
+        ProjectManager projectManager = mock(ProjectManager.class);
+        function = new CreateOtherIssuePostFunction(projectManager, customFieldManager) {
             protected MutableIssue getIssue(Map transientVars) throws DataAccessException {
                 return issue;
             }

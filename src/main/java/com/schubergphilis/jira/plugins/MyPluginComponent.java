@@ -1,6 +1,8 @@
 package com.schubergphilis.jira.plugins;
 
-public interface MyPluginComponent
-{
+public interface MyPluginComponent {
+
     String getName();
+    
 }
+

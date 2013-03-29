@@ -25,11 +25,3 @@
 		<input type="submit" class="aui-button" name="Submit" id="Submit" value="$i18n.getText("${i18nprefix}.save.value")" title="$i18n.getText("${i18nprefix}.save.title")" />
 	</div>
 </form>
-
-<script>
-	new AJS.SingleSelect({
-	       element: "AJS.$('#projectCategoryId')",
-	       itemAttrDisplayed: "title",
-	       errorMessage: "${i18n.getText('${i18nprefix}.projectCategory.nosuch')}"
-	});
-</script>

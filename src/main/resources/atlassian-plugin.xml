@@ -14,10 +14,12 @@
   <!-- add our web resources -->
   <web-resource key="workflow-resources" name="workflow Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <context>atl.general</context>
+    <context>jira.general</context>
+    <context>jira.admin</context>
     <resource type="download" name="workflow.css" location="/css/workflow.css"/>
     <resource type="download" name="workflow.js" location="/js/workflow.js"/>
     <resource type="download" name="images/" location="/images"/>
-    <context>workflow</context>
   </web-resource>
   <!-- publish our component -->
   <component key="myPluginComponent" class="com.schubergphilis.jira.plugins.MyPluginComponentImpl" public="true">

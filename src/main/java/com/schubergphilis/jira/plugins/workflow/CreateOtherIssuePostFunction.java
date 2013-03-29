@@ -38,7 +38,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     private ProjectManager projectManager;
     private CustomFieldManager customFieldManager;
 
-    CreateOtherIssuePostFunction(ProjectManager projectManager, CustomFieldManager customFieldManager) {
+    public CreateOtherIssuePostFunction(ProjectManager projectManager, CustomFieldManager customFieldManager) {
         this.projectManager = projectManager;
         this.customFieldManager = customFieldManager;
     }
@@ -61,12 +61,19 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         Collection<Project> projects = getProjects(issue, projectsFieldId);
         issue.getProjectObject().getId();
 
+        Collection<Issue> newIssues = new ArrayList<Issue>();
         for (Project project : projects) {
             Issue newIssue = createIssue(project.getId(), issue, issueTypeId, statusId);
-            if (logMessage != null) {
-                addCommentToIssue(issue, logMessage + newIssue.getKey());
-            }
+            newIssues.add(newIssue);
             linkIssues(issue, newIssue, linkTypeId);
+        }
+        
+        if (logMessage != null && !newIssues.isEmpty()) {
+            String logMessageIssuePart = "";
+            for (Issue nextIssue : newIssues) {
+                logMessageIssuePart += " " + nextIssue.getKey();
+            }
+            addCommentToIssue(issue, logMessage + logMessageIssuePart);
         }
 
     }
