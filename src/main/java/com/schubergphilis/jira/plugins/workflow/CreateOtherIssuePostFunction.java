@@ -106,7 +106,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         try {
             ComponentAccessor.getIssueLinkManager().createIssueLink(oldIssue.getId(), newIssue.getId(), linkTypeId, sequence, getRemoteUser());
         } catch (CreateException e) {
-            log.error("cannot create linkfrom " + oldIssue.getId() + " to " + newIssue.getId(), e);
+            log.error("cannot create link from " + oldIssue.getId() + " to " + newIssue.getId(), e);
         }
     }
 
@@ -144,15 +144,15 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId) {
         CreateValidationResult result = getIssueService().validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId));
         if (!result.isValid()) {
-            log.error("cannot create issue");
-
+            String firstError = null;
             for (Entry<String, String> e : result.getErrorCollection().getErrors().entrySet()) {
                 log.error(e.getKey() + " " + e.getValue());
+                if (firstError == null) {
+                    firstError = e.getKey() + ": " + e.getValue();
+                }
             }
 
-            log.error("" + result.getErrorCollection().getErrors().entrySet().iterator().next().getKey());
-            throw new IllegalStateException("Unable to create a new linked issue");
-
+            throw new IllegalStateException("Unable to create a new linked issue in project with projectId " + projectId + ". " + firstError + ".");
         }
         IssueResult answer = getIssueService().create(getRemoteUser(), result);
         if (!answer.isValid()) {
