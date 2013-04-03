@@ -38,6 +38,8 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     public static final String FIELD_NAME_ISSUE_TYPE_ID = "issueTypeId";
     public static final String FIELD_NAME_LINK_TYPE_ID = "linkTypeId";
     public static final String FIELD_NAME_STATUS_ID = "statusId";
+    public static final String FIELD_NAME_COPY_CUSTOM_FIELD_VALUES = "copyCustomFieldValues";
+    public static final String FIELD_NAME_COPY_ASSIGNEE = "copyAssignee";
 
     private ProjectManager projectManager;
     private CustomFieldManager customFieldManager;
@@ -61,14 +63,18 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         String statusId = (String) args.get(FIELD_NAME_STATUS_ID);
         Long linkTypeId = Long.parseLong((String) args.get(FIELD_NAME_LINK_TYPE_ID));
         String logMessage = (String) args.get(FIELD_NAME_LOG_MESSAGE);
+        Boolean copyAssignee = Boolean.parseBoolean((String) args.get(FIELD_NAME_COPY_ASSIGNEE));
+        Boolean copyCustomFieldValues = Boolean.parseBoolean((String) args.get(FIELD_NAME_COPY_CUSTOM_FIELD_VALUES));
 
         Collection<Project> projects = getProjects(issue, projectsFieldId);
         issue.getProjectObject().getId();
 
         Collection<Issue> newIssues = new ArrayList<Issue>();
         for (Project project : projects) {
-            Issue newIssue = createIssue(project.getId(), issue, issueTypeId, statusId);
-            copyCustomFields(issue, newIssue);
+            Issue newIssue = createIssue(project.getId(), issue, issueTypeId, statusId, copyAssignee);
+            if (copyCustomFieldValues) {
+                copyCustomFields(issue, newIssue);
+            }
             newIssues.add(newIssue);
             linkIssues(issue, newIssue, linkTypeId);
         }
@@ -118,23 +124,24 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         ComponentAccessor.getCommentManager().create(newIssue, getRemoteUser().getName(), comment, false);
     }
 
-    private IssueInputParameters provideInput(Long projectId, Issue originatingIssue, String issuetypeId, String statusId) {
+    private IssueInputParameters provideInput(Long projectId, Issue originatingIssue, String issuetypeId, String statusId, Boolean copyAssignee) {
         IssueInputParameters answer = getIssueInputParameters()
                 .setProjectId(projectId)
                 .setIssueTypeId(issuetypeId)
                 .setReporterId(getRemoteUser().getName())
                 .setStatusId(statusId);
-        copyDefaultFields(originatingIssue, answer);
+        copyDefaultFields(originatingIssue, answer, copyAssignee);
         return answer;
     }
     
-
-    private void copyDefaultFields(Issue originatingIssue, IssueInputParameters newIssue) {
+    private void copyDefaultFields(Issue originatingIssue, IssueInputParameters newIssue, Boolean copyAssignee) {
         newIssue
                 .setSummary(originatingIssue.getSummary())
                 .setDescription(originatingIssue.getDescription())
-                .setAssigneeId(originatingIssue.getAssigneeId())
                 .setPriorityId(originatingIssue.getPriorityObject().getId());
+        if (copyAssignee) {
+            newIssue.setAssigneeId(originatingIssue.getAssigneeId());
+        }
     }
 
     private void copyCustomFields(Issue originatingIssue, Issue newIssue) {
@@ -158,8 +165,8 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         return user;
     }
 
-    private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId) {
-        CreateValidationResult result = getIssueService().validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId));
+    private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId, Boolean copyAssignee) {
+        CreateValidationResult result = getIssueService().validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId, copyAssignee));
         if (!result.isValid()) {
             String firstError = null;
             for (Entry<String, String> e : result.getErrorCollection().getErrors().entrySet()) {

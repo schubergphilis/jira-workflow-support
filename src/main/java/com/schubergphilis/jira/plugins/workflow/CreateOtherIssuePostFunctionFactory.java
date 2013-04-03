@@ -45,7 +45,6 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
         velocityParams.put("linkTypes", issueLinkTypeManager.getIssueLinkTypes());
         velocityParams.put("issueTypes", issueTypeManager.getIssueTypes());
         velocityParams.put("stati", statusManager.getStatuses());
-        velocityParams.put("stati", statusManager.getStatuses());
     }
 
     private List<CustomField> getCustomFields() {
@@ -75,6 +74,8 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_STATUS_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_LINK_TYPE_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_LOG_MESSAGE, velocityParams, descriptor);
+        copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_COPY_ASSIGNEE, velocityParams, descriptor);
+        copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_COPY_CUSTOM_FIELD_VALUES, velocityParams, descriptor);
     }
 
     /**
@@ -95,8 +96,19 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
         extractSingleString(CreateOtherIssuePostFunction.FIELD_NAME_STATUS_ID, formParams, params);
         extractSingleLong(CreateOtherIssuePostFunction.FIELD_NAME_LINK_TYPE_ID, formParams, params);
         extractSingleString(CreateOtherIssuePostFunction.FIELD_NAME_LOG_MESSAGE, formParams, params);
+        extractSingleBoolean(CreateOtherIssuePostFunction.FIELD_NAME_COPY_ASSIGNEE, formParams, params);
+        extractSingleBoolean(CreateOtherIssuePostFunction.FIELD_NAME_COPY_CUSTOM_FIELD_VALUES, formParams, params);
 
         return params;
+    }
+
+    private void extractSingleBoolean(String key, Map<String, Object> formParams, Map params) {
+        try {
+            String value = extractSingleParam(formParams, key);
+            params.put(key, true);
+        } catch (IllegalArgumentException iae) {
+            params.put(key, false);
+        }
     }
 
     private void extractSingleString(String key, Map<String, Object> formParams, Map params) {

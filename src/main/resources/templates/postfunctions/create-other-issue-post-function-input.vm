@@ -60,6 +60,18 @@
 	</td>
 </tr>
 <tr>
+    <td class="fieldLabelArea">Copy assignee:</td>
+    <td>
+        <input type="checkbox" name="copyAssignee" value="$!copyAssignee" #if($copyAssignee == true) checked#end />
+    </td>       
+</tr>
+<tr>
+    <td class="fieldLabelArea">Copy custom fields:</td>
+    <td>
+        <input type="checkbox" name="copyCustomFieldValues" value="$!copyCustomFieldValues" #if($copyCustomFieldValues == true) checked#end/>
+    </td>       
+</tr>
+<tr>
     <td class="fieldLabelArea">Log Message:</td>
     <td>
         <input name="logMessage" id="logMessage" value="$!logMessage" />
