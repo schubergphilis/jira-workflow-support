@@ -10,6 +10,6 @@
 			#end
 			<option#if($selected) selected="selected"#end title="${project.name}" value="${project.id}">${project.name}</option>	
 		#end
-	</select>
+	</select><span class="aui-form">&nbsp;<a href="#" id="projects-field-select-all">Select All</a></span>
 	<div class="description">${i18n.getText("${i18nprefix}.description")}</div>
 </div>
