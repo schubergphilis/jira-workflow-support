@@ -9,8 +9,10 @@ import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.ModifiedValue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.fields.CustomField;
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.workflow.function.issue.AbstractJiraFunctionProvider;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -65,6 +68,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         Collection<Issue> newIssues = new ArrayList<Issue>();
         for (Project project : projects) {
             Issue newIssue = createIssue(project.getId(), issue, issueTypeId, statusId);
+            copyCustomFields(issue, newIssue);
             newIssues.add(newIssue);
             linkIssues(issue, newIssue, linkTypeId);
         }
@@ -118,14 +122,27 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         IssueInputParameters answer = getIssueInputParameters()
                 .setProjectId(projectId)
                 .setIssueTypeId(issuetypeId)
-                .setSummary(originatingIssue.getSummary())
                 .setReporterId(getRemoteUser().getName())
-                .setAssigneeId(originatingIssue.getAssigneeId())
-                .setDescription(originatingIssue.getDescription())
-                .setStatusId(statusId)
-                .setPriorityId(originatingIssue.getPriorityObject().getId());
-        
+                .setStatusId(statusId);
+        copyDefaultFields(originatingIssue, answer);
         return answer;
+    }
+    
+
+    private void copyDefaultFields(Issue originatingIssue, IssueInputParameters newIssue) {
+        newIssue
+                .setSummary(originatingIssue.getSummary())
+                .setDescription(originatingIssue.getDescription())
+                .setAssigneeId(originatingIssue.getAssigneeId())
+                .setPriorityId(originatingIssue.getPriorityObject().getId());
+    }
+
+    private void copyCustomFields(Issue originatingIssue, Issue newIssue) {
+        List<CustomField> customFields = customFieldManager.getCustomFieldObjects(originatingIssue);
+        for (CustomField customField : customFields) {
+            Object value = customField.getValue(originatingIssue);
+            customField.updateValue(null, newIssue, new ModifiedValue(null, value), new DefaultIssueChangeHolder());
+        }
     }
     
     private IssueService getIssueService() {
@@ -152,7 +169,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
                 }
             }
 
-            throw new IllegalStateException("Unable to create a new linked issue in project with projectId " + projectId + ". " + firstError + ".");
+            throw new IllegalStateException("Unable to create a new linked issue in project with projectId " + projectId + ". " + firstError);
         }
         IssueResult answer = getIssueService().create(getRemoteUser(), result);
         if (!answer.isValid()) {
