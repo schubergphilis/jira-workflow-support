@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -80,7 +81,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
     private Collection<Project> getProjects(MutableIssue issue, Long projectsFieldId) {
         if (projectsFieldId < 1) {
-            return getAllProjects();
+            return Collections.singletonList(issue.getProjectObject());
         } else {
             return getProjectsFromField(issue, projectsFieldId);
         }
@@ -97,10 +98,6 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         }
         
         return answer;
-    }
-
-    private Collection<Project> getAllProjects() {
-        return projectManager.getProjectObjects();
     }
 
     private void linkIssues(MutableIssue oldIssue, Issue newIssue, Long linkTypeId) {
@@ -127,9 +124,10 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
                 .setDescription(originatingIssue.getDescription())
                 .setStatusId(statusId)
                 .setPriorityId(originatingIssue.getPriorityObject().getId());
+        
         return answer;
     }
-
+    
     private IssueService getIssueService() {
         return ComponentAccessor.getIssueService();
     }
@@ -153,7 +151,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
             }
 
             log.error("" + result.getErrorCollection().getErrors().entrySet().iterator().next().getKey());
-            throw new IllegalStateException("Unable to create a new linked issue while closing this one");
+            throw new IllegalStateException("Unable to create a new linked issue");
 
         }
         IssueResult answer = getIssueService().create(getRemoteUser(), result);
