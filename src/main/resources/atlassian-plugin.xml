@@ -7,9 +7,13 @@
     <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     <param name="plugin-icon">images/pluginIcon.png</param>
     <param name="plugin-logo">images/pluginLogo.png</param>
+    <param name="configure.url">/secure/admin/ApprovalConfigurationAction.jspa</param>
   </plugin-info>
   <!-- add our i18n resource -->
   <resource type="i18n" name="i18n" location="i18n/workflow"/>
+  
+  <!-- we depend on -->
+  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
   
   <!-- add our web resources -->
   <web-resource key="workflow-resources" name="workflow Web Resources">
@@ -17,7 +21,9 @@
     <context>atl.general</context>
     <context>jira.general</context>
     <context>jira.admin</context>
-    <resource type="download" name="workflow.js" location="/js/workflow.js"/>
+    <resource type="download" name="workflow.js" location="/js/workflow.js">
+          <property key="content-type" value="text/javascript"/>
+    </resource>
     <resource type="download" name="images/" location="/images"/>
   </web-resource>
   <workflow-function key="create-other-issue-post-function" name="Create Other Issue Post Function" i18n-name-key="create-other-issue-post-function.name" class="com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunctionFactory">
@@ -32,11 +38,39 @@
     <resource name="view" type="velocity" location="/templates/customfields/projects-field/view.vm"/>
     <resource name="edit" type="velocity" location="/templates/customfields/projects-field/edit.vm"/>
   </customfield-type>
-	<webwork1 key="projectsfieldconfigaction" name="Projects field configuration action" class="java.lang.Object">
-		<actions>
-			<action name="com.schubergphilis.jira.plugins.customfield.EditConfiguration" alias="editprojectcategory" roles-required="admin">
-				<view name="input">/templates/customfields/projects-field/edit-config.vm</view>
-			</action>
-		</actions>
-	</webwork1>
+  <webwork1 key="projectsfieldconfigaction" name="Projects field configuration action" class="java.lang.Object">
+    <actions>
+      <action name="com.schubergphilis.jira.plugins.customfield.EditConfiguration" alias="editprojectcategory" roles-required="admin">
+        <view name="input">/templates/customfields/projects-field/edit-config.vm</view>
+      </action>
+    </actions>
+  </webwork1>
+  <web-item name="Create Approval Subtask" i18n-name-key="create-approval-subtask.name" key="create-approval-subtask" section="operations-top-level" weight="1000">
+    <description key="create-approval-subtask.description">The Create Approval Subtask Plugin</description>
+    <label key="create-approval-subtask.label">asdf</label>
+    <link linkId="create-approval-subtask-link">/secure/CreateApprovalAction.jspa?parentIssueId=$issue.id</link>
+    <styleClass>approval</styleClass>
+    <condition class="com.schubergphilis.jira.plugins.webwork.ConfigurationCondition"/>
+  </web-item>
+  <!-- 
+  <web-item key="plugin-admin-task" section="system.admin.tasks/general" weight="150">
+    <label key="plugin.admin.task.title"/>
+    <description key="plugin.admin.task.description"/>
+    <link id="configure-mail">/admin/mail/viewmailservers.action</link>
+    <condition class="com.atlassian.examples.DefaultMailServerExistsCondition" invert="true"/>
+</web-item>
+-->
+  <webwork1 key="approval-action" name="Approval Action" i18n-name-key="approval-action.name">
+    <description key="approval-action.description">The Approval Action Plugin</description>
+    <actions>
+      <action name="com.schubergphilis.jira.plugins.webwork.CreateApprovalAction" alias="CreateApprovalAction" />
+      <action name="com.schubergphilis.jira.plugins.webwork.ComplementApprovalAction" alias="ComplementApprovalAction">
+        <view name="input">/templates/approval-action/input.vm</view>
+        <view name="success">/templates/approval-action/success.vm</view>
+      </action>
+      <action name="com.schubergphilis.jira.plugins.webwork.ApprovalConfigurationAction" alias="ApprovalConfigurationAction">
+        <view name="success">/templates/approval-action/config.vm</view>
+      </action>
+    </actions>      
+  </webwork1>
 </atlassian-plugin>

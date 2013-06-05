@@ -1,0 +1,39 @@
+#set($i18nprefix = "com.schubergphilis.jira.plugins.workflow-support.plugin.configuration")
+
+<form action="#" method="post" id="d" class="aui">
+    <h3>$i18n.getText("${i18nprefix}.approval.title")</h3>
+    <fieldset>
+        <legend><span>Issue type and configured projects</span></legend>
+        <div class="field-group">
+ 	       <label for="approval.subtask.type">$i18n.getText("${i18nprefix}.approval.subtask.type.label")</label>
+		  	<select class="select" id="approvalSubtaskType" name="subtaskType">
+		  		<option value=""></option>
+				#foreach($issueType in $allSubtaskTypes)
+					#set($selected = false)
+					#if($issueType.id == $configuredSubtaskType)
+						#set($selected = true)
+					#end
+					<option#if($selected) selected="selected"#end title="${issueType.name}" value="${issueType.id}">${issueType.name}</option>	
+				#end
+			</select>
+        </div>
+        <div class="field-group">
+            <label for="multiselect">$i18n.getText("${i18nprefix}.approval.project.ids.label")</label>
+		  	<select class="select" multiple="multiple" id="approvalProjectIds" name="projectIds">
+				#foreach($project in $allProjects)
+					#set($selected = false)
+					#if($configuredProjectIds.contains($project.id.toString()))
+						#set($selected = true)
+					#end
+					<option#if($selected) selected="selected"#end title="${project.name}" value="${project.id}">${project.name}</option>	
+				#end
+			</select>
+        </div>
+    </fieldset>
+    <div class="buttons-container">
+        <div class="buttons">
+            <input class="button submit" type="submit" value="Save" id="d-save-btn1">
+            <a class="cancel" href="#">Cancel</a>
+        </div>
+    </div>
+</form>                        

@@ -1,0 +1,5 @@
+<h1>input.vm</h1>
+
+<form class="aui">
+$action.editHtml
+</form>
