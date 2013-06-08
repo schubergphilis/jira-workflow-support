@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.schubergphilis.jira.plugins</groupId>
     <artifactId>workflow-support</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0-SNAPSHOT</version>
     <organization>
         <name>Schuberg Philis</name>
         <url>http://www.schubergphilis.com/</url>
