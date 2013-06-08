@@ -11,10 +11,8 @@
   </plugin-info>
   <!-- add our i18n resource -->
   <resource type="i18n" name="i18n" location="i18n/workflow"/>
-  
   <!-- we depend on -->
   <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
-  
   <!-- add our web resources -->
   <web-resource key="workflow-resources" name="workflow Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -22,7 +20,7 @@
     <context>jira.general</context>
     <context>jira.admin</context>
     <resource type="download" name="workflow.js" location="/js/workflow.js">
-          <property key="content-type" value="text/javascript"/>
+      <property key="content-type" value="text/javascript"/>
     </resource>
     <resource type="download" name="images/" location="/images"/>
   </web-resource>
@@ -47,10 +45,10 @@
   </webwork1>
   <web-item name="Create Approval Subtask" i18n-name-key="create-approval-subtask.name" key="create-approval-subtask" section="operations-top-level" weight="1000">
     <description key="create-approval-subtask.description">The Create Approval Subtask Plugin</description>
-    <label key="create-approval-subtask.label">asdf</label>
+    <label key="create-approval-subtask.label">Create Approval</label>
     <link linkId="create-approval-subtask-link">/secure/CreateApprovalAction.jspa?parentIssueId=$issue.id</link>
     <styleClass>approval</styleClass>
-    <condition class="com.schubergphilis.jira.plugins.webwork.ConfigurationCondition"/>
+    <condition class="com.schubergphilis.jira.plugins.webwork.ProjectConfiguredCondition"/>
   </web-item>
   <!-- 
   <web-item key="plugin-admin-task" section="system.admin.tasks/general" weight="150">
@@ -64,13 +62,13 @@
     <description key="approval-action.description">The Approval Action Plugin</description>
     <actions>
       <action name="com.schubergphilis.jira.plugins.webwork.CreateApprovalAction" alias="CreateApprovalAction" />
-      <action name="com.schubergphilis.jira.plugins.webwork.ComplementApprovalAction" alias="ComplementApprovalAction">
-        <view name="input">/templates/approval-action/input.vm</view>
-        <view name="success">/templates/approval-action/success.vm</view>
-      </action>
       <action name="com.schubergphilis.jira.plugins.webwork.ApprovalConfigurationAction" alias="ApprovalConfigurationAction">
         <view name="success">/templates/approval-action/config.vm</view>
       </action>
-    </actions>      
+    </actions>
   </webwork1>
+  <component key="approval-configuration-impl" class="com.schubergphilis.jira.plugins.components.ApprovalConfigurationImpl" name="Approval Configuration Impl" i18n-name-key="approval-configuration-impl.name">
+    <description key="approval-configuration-impl.description">The Approval Configuration Impl Plugin</description>
+    <interface>com.schubergphilis.jira.plugins.components.ApprovalConfiguration</interface>
+  </component>
 </atlassian-plugin>

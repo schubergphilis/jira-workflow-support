@@ -32,17 +32,11 @@ JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function (e, context) {
 
 });
 
-
 AJS.$(function () {
     JIRA.Dialogs.approvalIssue = new JIRA.FormDialog({
         id: "schedule-dialog",
         trigger: "a.approval",
-        handleRedirect: true,
-        ajaxOptions: JIRA.Dialogs.getDefaultAjaxOptions,
-        onDialogFinished: function() {
-        	JIRA.Messages.showSuccessMsg("wooooot");
-        },
-        issueMsg : 'thanks_issue_updated'
+        handleRedirect: true
     });
 });
 

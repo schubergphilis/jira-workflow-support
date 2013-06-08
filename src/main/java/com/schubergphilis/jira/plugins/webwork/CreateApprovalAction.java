@@ -8,8 +8,7 @@ import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.web.action.JiraWebActionSupport;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.schubergphilis.jira.plugins.components.ApprovalConfiguration;
 import com.schubergphilis.jira.plugins.workflow.IssueCreationException;
 
 import org.slf4j.Logger;
@@ -29,25 +28,33 @@ public class CreateApprovalAction extends JiraWebActionSupport {
 
     SubTaskManager subTaskManager;
 
-    PluginSettings pluginSettings;
+    private ApprovalConfiguration configuration;
 
-    public CreateApprovalAction(IssueService issueService, SubTaskManager subtaskManager, PluginSettingsFactory pluginSettingsFactory) {
+    public CreateApprovalAction(IssueService issueService, SubTaskManager subtaskManager, ApprovalConfiguration config) {
         this.issueService = issueService;
         this.subTaskManager = subtaskManager;
-        pluginSettings = pluginSettingsFactory.createSettingsForKey(ApprovalConfigurationAction.PLUGIN_KEY);
+        this.configuration = config;
+    }
+
+    /**
+     * Get the parent issue by id that was passed to us
+     */
+    private Issue getParentIssue() {
+        IssueResult parentIssueResult = issueService.getIssue(getLoggedInUser(), parentIssueId);
+        Issue parentIssue = parentIssueResult.getIssue();
+        return parentIssue;
     }
 
     @Override
     public String doExecute() throws Exception {
         log.debug("request to create a subtask for " + parentIssueId);
         Issue subTask = createSubTask();
-        return getRedirect("/secure/ComplementApprovalAction.jspa?id=" + subTask.getId() + addDialogParametersWhenInline());
+        return returnMsgToUser("/browse/" + subTask.getKey(), "created approval subtask: " + subTask.getKey(), MessageType.SUCCESS , true, null);
     }
 
     private Issue createSubTask() {
-        IssueResult parentIssueResult = issueService.getIssue(getLoggedInUser(), parentIssueId);
-        Issue parentIssue = parentIssueResult.getIssue();
-        IssueInputParameters issueInput = provideInput(parentIssue, getConfiguredSubtaskType());
+        Issue parentIssue = getParentIssue();
+        IssueInputParameters issueInput = provideInput(getParentIssue(), getConfiguredSubtaskType());
         CreateValidationResult result = issueService.validateSubTaskCreate(getLoggedInUser(), parentIssue.getId(), issueInput);
         if (!result.isValid()) {
             String firstError = null;
@@ -62,6 +69,7 @@ public class CreateApprovalAction extends JiraWebActionSupport {
         }
         IssueResult answer = issueService.create(getLoggedInUser(), result);
 
+        // Apparently we are responsible for creating the link here. Although I have seen this somewhere in the taskManager.
         try {
             subTaskManager.createSubTaskIssueLink(parentIssue, answer.getIssue(), getLoggedInUser());
         } catch (CreateException ce) {
@@ -82,36 +90,20 @@ public class CreateApprovalAction extends JiraWebActionSupport {
                 .setReporterId(getLoggedInUser().getName());
 
         // copy some basic fields
-        answer.setSummary(parentIssue.getSummary());
+        answer.setSummary("Approval: " + parentIssue.getSummary());
         answer.setDescription(parentIssue.getDescription());
 
         return answer;
     }
 
 
-    private String addDialogParametersWhenInline() {
-        if (isInlineDialogMode()) {
-            return "&decorator=dialog&inline=true";
-        } else {
-            return "";
-        }
-    }
-
     public void setParentIssueId(Long parentIssueId) {
         this.parentIssueId = parentIssueId;
     }
 
     String getConfiguredSubtaskType() {
-        if (pluginCorrectlyConfigured()) {
-            String subtaskType = (String) pluginSettings.get(ApprovalConfigurationAction.KEY_APPROVAL_SUBTASK_TYPE);
-            return subtaskType;
-        } else {
-            throw new PluginNotConfiguredException();
-        }
-    }
-
-    private boolean pluginCorrectlyConfigured() {
-        return ConfigurationCondition.pluginCorrectlyConfigured(pluginSettings);
+        String subtaskType = (String) configuration.getSubtaskType();
+        return subtaskType;
     }
 
 }
