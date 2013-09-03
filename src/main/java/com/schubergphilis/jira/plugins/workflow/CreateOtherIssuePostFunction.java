@@ -131,6 +131,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
                 .setReporterId(getRemoteUser().getName())
                 .setStatusId(statusId);
         copyDefaultFields(originatingIssue, answer, copyAssignee);
+        answer.setApplyDefaultValuesWhenParameterNotProvided(true);
         return answer;
     }
     
