@@ -11,9 +11,7 @@ import com.atlassian.jira.project.ProjectManager;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class ProjectCategoryConfigurationItem implements FieldConfigItemType {
-
 
     private ProjectManager projectManager;
 
@@ -67,5 +65,4 @@ public class ProjectCategoryConfigurationItem implements FieldConfigItemType {
     public String getBaseEditUrl() {
         return "editprojectcategory.jspa";
     }
-
 }

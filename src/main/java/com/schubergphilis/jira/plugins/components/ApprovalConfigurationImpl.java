@@ -15,8 +15,6 @@ import java.util.List;
 
 public class ApprovalConfigurationImpl implements ApprovalConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(ApprovalConfigurationImpl.class);
-
     public static final String PLUGIN_KEY = "com.schubergphilis.jira.plugins.workflow-support";
 
     public static final String KEY_APPROVAL_SUBTASK_TYPE = "approval.subtask.type";
@@ -37,7 +35,7 @@ public class ApprovalConfigurationImpl implements ApprovalConfiguration {
         if (configObject != null && configObject instanceof String) {
             String s = (String) configObject;
             if (!s.isEmpty() && issueTypeManager.getIssueType(s) != null) {
-                return true;    
+                return true;
             }
         }
         return false;
@@ -67,7 +65,7 @@ public class ApprovalConfigurationImpl implements ApprovalConfiguration {
 
     @Override
     public void setSubtaskType(String subTaskType) {
-        pluginSettings.put(ApprovalConfigurationImpl.KEY_APPROVAL_SUBTASK_TYPE, subTaskType);        
+        pluginSettings.put(ApprovalConfigurationImpl.KEY_APPROVAL_SUBTASK_TYPE, subTaskType);
     }
 
     @Override

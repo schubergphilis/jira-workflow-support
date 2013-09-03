@@ -1,5 +1,3 @@
-
-
 JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function (e, context) {
 	/* projects field */
 	var 	projectsField = new AJS.MultiSelect({

@@ -15,18 +15,9 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.util.ErrorCollection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProjectsField extends AbstractMultiCFType<Long> {
-
-    private static final Logger log = LoggerFactory.getLogger(ProjectsField.class);
 
     private ProjectManager projectManager;
 
@@ -48,8 +39,8 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
 
     @Override
     public Map<String, Object> getVelocityParameters(final Issue issue,
-            final CustomField field,
-            final FieldLayoutItem fieldLayoutItem) {
+                                                     final CustomField field,
+                                                     final FieldLayoutItem fieldLayoutItem) {
         final Map<String, Object> map = super.getVelocityParameters(issue, field, fieldLayoutItem);
 
         // This method is also called to get the default value, in
@@ -110,7 +101,8 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
     }
 
     @Override
-    public void validateFromParams(CustomFieldParams relevantParams, ErrorCollection errorCollectionToAddTo, FieldConfig config) {}
+    public void validateFromParams(CustomFieldParams relevantParams, ErrorCollection errorCollectionToAddTo, FieldConfig config) {
+    }
 
     @Override
     public Collection<Long> getValueFromCustomFieldParams(CustomFieldParams parameters) throws FieldValidationException {
@@ -146,5 +138,4 @@ public class ProjectsField extends AbstractMultiCFType<Long> {
     protected Long convertDbValueToType(Object dbValue) {
         return ((Double) dbValue).longValue();
     }
-
 }

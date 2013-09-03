@@ -6,11 +6,7 @@ import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
-import com.atlassian.jira.issue.CustomFieldManager;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueInputParameters;
-import com.atlassian.jira.issue.ModifiedValue;
-import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.*;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.util.DefaultIssueChangeHolder;
 import com.atlassian.jira.project.Project;
@@ -22,16 +18,12 @@ import com.opensymphony.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
 
     public static final String FIELD_NAME_PROJECTS_FIELD_ID = "projectsFieldId";
     public static final String FIELD_NAME_LOG_MESSAGE = "logMessage";
@@ -52,12 +44,11 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     public void execute(Map transientVars, Map args, PropertySet ps) throws WorkflowException {
         MutableIssue issue = getIssue(transientVars);
 
-
         Long projectsFieldId = 0L;
         try {
             projectsFieldId = Long.parseLong((String) args.get(FIELD_NAME_PROJECTS_FIELD_ID));
         } catch (Exception e) {
-            log.error("Expected a long, but could not parse it", e);
+            LOG.error("Expected a long, but could not parse it", e);
         }
         String issueTypeId = (String) args.get(FIELD_NAME_ISSUE_TYPE_ID);
         String statusId = (String) args.get(FIELD_NAME_STATUS_ID);
@@ -78,7 +69,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
             newIssues.add(newIssue);
             linkIssues(issue, newIssue, linkTypeId);
         }
-        
+
         if (logMessage != null && !newIssues.isEmpty()) {
             String logMessageIssuePart = "";
             for (Issue nextIssue : newIssues) {
@@ -99,24 +90,24 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
     private Collection<Project> getProjectsFromField(MutableIssue issue, Long projectsFieldId) {
         ArrayList<Project> answer = new ArrayList<Project>();
-        
+
         CustomField customField = customFieldManager.getCustomFieldObject(projectsFieldId);
         ArrayList<Long> projectIds = (ArrayList<Long>) issue.getCustomFieldValue(customField);
-        
+
         for (Long projectId : projectIds) {
             answer.add(projectManager.getProjectObj(projectId));
         }
-        
+
         return answer;
     }
 
     private void linkIssues(MutableIssue oldIssue, Issue newIssue, Long linkTypeId) {
-        log.debug("trying to create link from " + oldIssue.getId() + " to " + newIssue.getId());
+        LOG.debug("trying to create link from " + oldIssue.getId() + " to " + newIssue.getId());
         long sequence = 0L;
         try {
             ComponentAccessor.getIssueLinkManager().createIssueLink(oldIssue.getId(), newIssue.getId(), linkTypeId, sequence, getRemoteUser());
         } catch (CreateException e) {
-            log.error("cannot create link from " + oldIssue.getId() + " to " + newIssue.getId(), e);
+            LOG.error("cannot create link from " + oldIssue.getId() + " to " + newIssue.getId(), e);
         }
     }
 
@@ -134,7 +125,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         answer.setApplyDefaultValuesWhenParameterNotProvided(true);
         return answer;
     }
-    
+
     private void copyDefaultFields(Issue originatingIssue, IssueInputParameters newIssue, Boolean copyAssignee) {
         newIssue
                 .setSummary(originatingIssue.getSummary())
@@ -152,7 +143,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
             customField.updateValue(null, newIssue, new ModifiedValue(null, value), new DefaultIssueChangeHolder());
         }
     }
-    
+
     private IssueService getIssueService() {
         return ComponentAccessor.getIssueService();
     }
@@ -162,16 +153,16 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     }
 
     private User getRemoteUser() {
-        User user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-        return user;
+        return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
     }
 
     private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId, Boolean copyAssignee) {
-        CreateValidationResult result = getIssueService().validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId, copyAssignee));
+        CreateValidationResult result = getIssueService()
+                .validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId, copyAssignee));
         if (!result.isValid()) {
             String firstError = null;
             for (Entry<String, String> e : result.getErrorCollection().getErrors().entrySet()) {
-                log.error(e.getKey() + " " + e.getValue());
+                LOG.error(e.getKey() + " " + e.getValue());
                 if (firstError == null) {
                     firstError = e.getKey() + ": " + e.getValue();
                 }
@@ -181,11 +172,9 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         }
         IssueResult answer = getIssueService().create(getRemoteUser(), result);
         if (!answer.isValid()) {
-            log.error("cannot create issue, although I checked before");
+            LOG.error("cannot create issue, although I checked before");
         }
 
         return answer.getIssue();
     }
-
-
 }

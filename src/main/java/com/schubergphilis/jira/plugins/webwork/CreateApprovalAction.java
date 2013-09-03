@@ -49,7 +49,7 @@ public class CreateApprovalAction extends JiraWebActionSupport {
     public String doExecute() throws Exception {
         log.debug("request to create a subtask for " + parentIssueId);
         Issue subTask = createSubTask();
-        return returnMsgToUser("/browse/" + subTask.getKey(), "created approval subtask: " + subTask.getKey(), MessageType.SUCCESS , true, null);
+        return returnMsgToUser("/browse/" + subTask.getKey(), "created approval subtask: " + subTask.getKey(), MessageType.SUCCESS, true, null);
     }
 
     private Issue createSubTask() {
@@ -85,9 +85,9 @@ public class CreateApprovalAction extends JiraWebActionSupport {
 
     private IssueInputParameters provideInput(Issue parentIssue, String issuetypeId) {
         IssueInputParameters answer = issueService.newIssueInputParameters()
-                .setProjectId(parentIssue.getProjectObject().getId())
-                .setIssueTypeId(issuetypeId)
-                .setReporterId(getLoggedInUser().getName());
+                                                  .setProjectId(parentIssue.getProjectObject().getId())
+                                                  .setIssueTypeId(issuetypeId)
+                                                  .setReporterId(getLoggedInUser().getName());
 
         // copy some basic fields
         answer.setSummary("Approval: " + parentIssue.getSummary());
@@ -96,14 +96,11 @@ public class CreateApprovalAction extends JiraWebActionSupport {
         return answer;
     }
 
-
     public void setParentIssueId(Long parentIssueId) {
         this.parentIssueId = parentIssueId;
     }
 
     String getConfiguredSubtaskType() {
-        String subtaskType = (String) configuration.getSubtaskType();
-        return subtaskType;
+        return configuration.getSubtaskType();
     }
-
 }
