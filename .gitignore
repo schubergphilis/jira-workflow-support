@@ -1,4 +1,59 @@
-.classpath
+### java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### osx ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+### intellij ###
+*.iml
+*.ipr
+*.iws
+.idea/
+
+### maven ###
+target/
+
+### eclipse ###
+*.pydevproject
 .project
-target 
-bin
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
