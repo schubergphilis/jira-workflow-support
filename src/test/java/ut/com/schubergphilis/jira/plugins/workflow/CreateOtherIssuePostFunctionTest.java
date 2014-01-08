@@ -5,6 +5,8 @@ import static org.mockito.Mockito.mock;
 
 import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.issue.CustomFieldManager;
+import com.atlassian.jira.issue.IssueFactory;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.ProjectManager;
 import com.schubergphilis.jira.plugins.workflow.CreateOtherIssuePostFunction;
@@ -32,7 +34,9 @@ public class CreateOtherIssuePostFunctionTest
 
         CustomFieldManager customFieldManager = mock(CustomFieldManager.class);
         ProjectManager projectManager = mock(ProjectManager.class);
-        function = new CreateOtherIssuePostFunction(projectManager, customFieldManager) {
+        IssueFactory issueFactory = mock(IssueFactory.class);
+        IssueManager issueManager = mock(IssueManager.class);
+        function = new CreateOtherIssuePostFunction(projectManager, customFieldManager, issueManager, issueFactory) {
             protected MutableIssue getIssue(Map transientVars) throws DataAccessException {
                 return issue;
             }
