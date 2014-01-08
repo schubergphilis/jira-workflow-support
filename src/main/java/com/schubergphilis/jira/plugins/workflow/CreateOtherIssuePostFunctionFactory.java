@@ -7,7 +7,6 @@ import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.plugin.workflow.AbstractWorkflowPluginFactory;
 import com.atlassian.jira.plugin.workflow.WorkflowPluginFunctionFactory;
-import com.atlassian.jira.project.ProjectManager;
 import com.opensymphony.workflow.loader.AbstractDescriptor;
 import com.opensymphony.workflow.loader.FunctionDescriptor;
 import com.schubergphilis.jira.plugins.customfield.ProjectsField;
@@ -29,10 +28,9 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
     private IssueTypeManager issueTypeManager;
     private IssueLinkTypeManager issueLinkTypeManager;
     private StatusManager statusManager;
-    private ProjectManager projectManager;
     private CustomFieldManager customFieldManager;
 
-    public CreateOtherIssuePostFunctionFactory(CustomFieldManager customFieldManager, ProjectManager projectManager, IssueTypeManager issueTypeManager, StatusManager statusManager, IssueLinkTypeManager issueLinkTypeManager) {
+    public CreateOtherIssuePostFunctionFactory(CustomFieldManager customFieldManager, IssueTypeManager issueTypeManager, StatusManager statusManager, IssueLinkTypeManager issueLinkTypeManager) {
         this.customFieldManager = customFieldManager;
         this.issueTypeManager = issueTypeManager;
         this.issueLinkTypeManager = issueLinkTypeManager;
@@ -67,8 +65,6 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
 
     @Override
     protected void getVelocityParamsForView(Map<String, Object> velocityParams, AbstractDescriptor descriptor) {
-        FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
-
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_PROJECTS_FIELD_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_ISSUE_TYPE_ID, velocityParams, descriptor);
         copyStringToVelocityTemplate(CreateOtherIssuePostFunction.FIELD_NAME_STATUS_ID, velocityParams, descriptor);
@@ -120,5 +116,4 @@ public class CreateOtherIssuePostFunctionFactory extends AbstractWorkflowPluginF
         String value = extractSingleParam(formParams, key);
         params.put(key, Long.parseLong(value));
     }
-
 }

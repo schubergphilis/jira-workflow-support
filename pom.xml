@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.schubergphilis.jira.plugins</groupId>
     <artifactId>workflow-support</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
     <organization>
         <name>Schuberg Philis</name>
         <url>http://www.schubergphilis.com/</url>
@@ -125,8 +125,8 @@
         </plugins>
     </build>
     <properties>
-        <jira.version>5.1.8</jira.version>
-        <amps.version>4.1.7</amps.version>
+        <jira.version>6.1.5</jira.version>
+        <amps.version>4.2.10</amps.version>
         <plugin.testrunner.version>1.1</plugin.testrunner.version>
     </properties>
 </project>

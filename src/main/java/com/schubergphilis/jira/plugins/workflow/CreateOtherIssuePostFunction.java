@@ -19,16 +19,12 @@ import com.opensymphony.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateOtherIssuePostFunction.class);
 
     public static final String FIELD_NAME_PROJECTS_FIELD_ID = "projectsFieldId";
     public static final String FIELD_NAME_LOG_MESSAGE = "logMessage";
@@ -53,12 +49,11 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     public void execute(Map transientVars, Map args, PropertySet ps) throws WorkflowException {
         MutableIssue issue = getIssue(transientVars);
 
-
         Long projectsFieldId = 0L;
         try {
             projectsFieldId = Long.parseLong((String) args.get(FIELD_NAME_PROJECTS_FIELD_ID));
         } catch (Exception e) {
-            log.error("Expected a long, but could not parse it", e);
+            LOG.error("Expected a long, but could not parse it", e);
         }
         String issueTypeId = (String) args.get(FIELD_NAME_ISSUE_TYPE_ID);
         String statusId = (String) args.get(FIELD_NAME_STATUS_ID);
@@ -74,7 +69,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
 
         for (Project project : projects) {
             try {
-                Issue newIssue = createIssue2(project.getId(), issue, issueTypeId, statusId, copyAssignee);
+                Issue newIssue = createIssue(project.getId(), issue, issueTypeId, statusId, copyAssignee);
                 if (copyCustomFieldValues) {
                     copyCustomFields(issue, newIssue);
                 }
@@ -83,7 +78,7 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
             } catch (Exception e) {
                 String message = "(!) cannot create an issue in project " + project.getName() + ". See log for more details.";
                 addCommentToIssue(issue, message);
-                log.error(message, e);
+                LOG.error(message, e);
             }
         }
 
@@ -119,37 +114,17 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
     }
 
     private void linkIssues(MutableIssue oldIssue, Issue newIssue, Long linkTypeId) {
-        log.debug("trying to create link from " + oldIssue.getId() + " to " + newIssue.getId());
+        LOG.debug("trying to create link from " + oldIssue.getId() + " to " + newIssue.getId());
         long sequence = 0L;
         try {
             ComponentAccessor.getIssueLinkManager().createIssueLink(oldIssue.getId(), newIssue.getId(), linkTypeId, sequence, getRemoteUser());
         } catch (CreateException e) {
-            log.error("cannot create link from " + oldIssue.getId() + " to " + newIssue.getId(), e);
+            LOG.error("cannot create link from " + oldIssue.getId() + " to " + newIssue.getId(), e);
         }
     }
 
     private void addCommentToIssue(Issue newIssue, String comment) {
         ComponentAccessor.getCommentManager().create(newIssue, getRemoteUser().getName(), comment, false);
-    }
-
-    private IssueInputParameters provideInput(Long projectId, Issue originatingIssue, String issuetypeId, String statusId, Boolean copyAssignee) {
-        IssueInputParameters answer = getIssueInputParameters()
-                .setProjectId(projectId)
-                .setIssueTypeId(issuetypeId)
-                .setReporterId(getRemoteUser().getName())
-                .setStatusId(statusId);
-        copyDefaultFields(originatingIssue, answer, copyAssignee);
-        return answer;
-    }
-
-    private void copyDefaultFields(Issue originatingIssue, IssueInputParameters newIssue, Boolean copyAssignee) {
-        newIssue
-                .setSummary(originatingIssue.getSummary())
-                .setDescription(originatingIssue.getDescription())
-                .setPriorityId(originatingIssue.getPriorityObject().getId());
-        if (copyAssignee) {
-            newIssue.setAssigneeId(originatingIssue.getAssigneeId());
-        }
     }
 
     private void copyCustomFields(Issue originatingIssue, Issue newIssue) {
@@ -164,16 +139,11 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         return ComponentAccessor.getIssueService();
     }
 
-    private IssueInputParameters getIssueInputParameters() {
-        return getIssueService().newIssueInputParameters();
-    }
-
     private User getRemoteUser() {
-        User user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-        return user;
+        return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
     }
 
-    private Issue createIssue2(Long projectId, Issue originatingIssue, String issueTypeId, String statusId, Boolean copyAssignee) throws CreateException {
+    private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId, Boolean copyAssignee) throws CreateException {
         MutableIssue newIssue = issueFactory.getIssue();
         newIssue.setProjectId(projectId);
         newIssue.setIssueTypeId(issueTypeId);
@@ -198,33 +168,5 @@ public class CreateOtherIssuePostFunction extends AbstractJiraFunctionProvider {
         }
         return answer;
     }
-
-    private Issue createIssue(Long projectId, Issue originatingIssue, String issueTypeId, String statusId, Boolean copyAssignee) {
-        CreateValidationResult result = getIssueService().validateCreate(getRemoteUser(), provideInput(projectId, originatingIssue, issueTypeId, statusId, copyAssignee));
-        if (!result.isValid()) {
-            String firstError = null;
-
-            // try and find a decent explanation for the validation failure. It can come from a lot of places, we try two here:
-            for (String message : result.getErrorCollection().getErrorMessages()) {
-                if (firstError == null) {
-                    firstError = message;
-                }
-            }
-
-            for (ErrorCollection.Reason reason : result.getErrorCollection().getReasons()) {
-                if (firstError == null) {
-                    firstError = reason.toString();
-                }
-            }
-            throw new IllegalStateException("Unable to create a new linked issue in project with projectId " + projectId + ". " + (firstError != null ? firstError : ""));
-        }
-        IssueResult answer = getIssueService().create(getRemoteUser(), result);
-        if (!answer.isValid()) {
-            log.error("cannot create issue, although I checked before");
-        }
-
-        return answer.getIssue();
-    }
-
 
 }

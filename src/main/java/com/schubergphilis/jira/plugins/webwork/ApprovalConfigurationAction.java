@@ -7,18 +7,16 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.web.action.JiraWebActionSupport;
 import com.schubergphilis.jira.plugins.components.ApprovalConfiguration;
 
-import webwork.action.ActionContext;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import webwork.action.ActionContext;
 
 public class ApprovalConfigurationAction extends JiraWebActionSupport {
 
     private static final long serialVersionUID = 1L;
-
 
     ProjectManager projectManager;
 
@@ -27,7 +25,7 @@ public class ApprovalConfigurationAction extends JiraWebActionSupport {
     private String[] projectIds = new String[0];
 
     private String subTaskType;
-    
+
     ApprovalConfiguration configuration;
 
     public ApprovalConfigurationAction(IssueTypeManager issueTypeManager, ProjectManager projectManager, ApprovalConfiguration config) {
@@ -74,5 +72,4 @@ public class ApprovalConfigurationAction extends JiraWebActionSupport {
     public void setSubtaskType(String subTaskType) {
         this.subTaskType = subTaskType;
     }
-
 }

@@ -7,9 +7,9 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.xsrf.RequiresXsrfCheck;
 import com.atlassian.jira.web.action.JiraWebActionSupport;
 
-import webwork.action.ActionContext;
-
 import java.util.Collection;
+
+import webwork.action.ActionContext;
 
 public class EditConfiguration extends JiraWebActionSupport {
 
@@ -41,7 +41,8 @@ public class EditConfiguration extends JiraWebActionSupport {
             return INPUT;
         } else {
             DAO.setProjectCategory(getFieldConfig(), getProjectCategoryId());
-            setReturnUrl("/secure/admin/ConfigureCustomField!default.jspa?customFieldId=" + getFieldConfig().getCustomField().getIdAsLong().toString());
+            setReturnUrl("/secure/admin/ConfigureCustomField!default.jspa?customFieldId=" + getFieldConfig().getCustomField().getIdAsLong()
+                    .toString());
             return getRedirect("not used");
         }
     }
@@ -73,5 +74,4 @@ public class EditConfiguration extends JiraWebActionSupport {
     public Collection<ProjectCategory> getProjectCategories() {
         return projectManager.getAllProjectCategories();
     }
-
 }
